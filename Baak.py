@@ -4,6 +4,32 @@ from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 from datetime import datetime
 import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+def send_email(to_email, subject, message):
+    from_email = "email_lo@gmail.com"  # Ganti dengan email lo
+    password = "password_email_lo"  # Ganti dengan password lo (gunakan App Password kalau pakai Gmail)
+
+    # Setup SMTP server
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(from_email, password)
+
+    # Buat pesan email
+    msg = MIMEMultipart()
+    msg["From"] = from_email
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(message, "plain"))
+
+    # Kirim email
+    server.sendmail(from_email, to_email, msg.as_string())
+    server.quit()
+
+    print(f"✅ Email berhasil dikirim ke {to_email}")
+
 
 # Fungsi untuk mengambil kalender akademik
 def get_akademik_calendar():
@@ -95,7 +121,7 @@ mahasiswa_pindah = [
 
 # Daftar Kuliah
 daftar_kuliah = [
-    ("2IA24", "Rabu", "Matematika Informatika 4 *", "1/2/3", "J1216B", "SRAVA CHRISDES ANTORO"),
+    ("2IA24", "Selasa", "Matematika Informatika 4 *", "5/6/7", "J1318", "HERIK SUGERU"),
     ("2IA24", "Rabu", "Pemrograman Berorientasi Objek **", "5/6/7", "J1216B", "INDAH TRI HANDAYANI"),
     ("2IA24", "Rabu", "Statistika 2 **", "8/9/10", "J1216B", "INTI MULYO ARTI"),
     ("2IA24", "Kamis", "Sistem Operasi */**", "1/2/3", "J1116", "NATALLIOS PETER SIPASULTA"),
@@ -205,6 +231,30 @@ def cari_mahasiswa():
         print(result_table)
     else:
         print("❌ Mahasiswa tidak ditemukan.")
+#-------------------------------------------------------------------------------
+
+email_list = {
+    "Viqri": "viqri@example.com",
+    "Axl": "axl@example.com",
+    "Rivan": "rivan@example.com"
+}
+
+def pilih_penerima():
+    print("\nPilih penerima notifikasi:")
+    print("1. Viqri")
+    print("2. Axl")
+    print("3. Rivan")
+
+    pilihan = input("Masukkan pilihan (1/2/3): ")
+    if pilihan == "1":
+        return email_list["Viqri"]
+    elif pilihan == "2":
+        return email_list["Axl"]
+    elif pilihan == "3":
+        return email_list["Rivan"]
+    else:
+        print("❌ Pilihan tidak valid.")
+        return None
 
 
 # Menu utama
@@ -215,11 +265,12 @@ def main_menu():
         print("2. Tampilkan Daftar Mahasiswa yang Pindah Kelas")
         print("3. Tampilkan Daftar Jadwal Kuliah")
         print("4. Cari Mahasiswa")
-        print("5. Keluar")
-        pilihan = input("Masukkan pilihan (1/2/3/4/5): ")
+        print("5. Kirim Notifikasi Tugas")
+        print("6. Keluar")
+
+        pilihan = input("Masukkan pilihan (1/2/3/4/5/6): ")
 
         if pilihan == '1':
-            calendar_data = get_akademik_calendar()
             display_academic_calendar()
         elif pilihan == '2':
             display_student_data()
@@ -227,11 +278,42 @@ def main_menu():
             display_course_schedule()
         elif pilihan == '4':
             cari_mahasiswa()
-        elif pilihan == '5':
+        if pilihan == "5":
+            penerima_dict = {
+                "1": "viqri@gmail.com",
+                "2": "axl@gmail.com",
+                "3": "rivan@gmail.com"
+            }
+
+            print("\nPilih penerima notifikasi tugas:")
+            for key, email in penerima_dict.items():
+                print(f"{key}. {email}")
+
+            penerima_pilihan = input("Masukkan pilihan (1/2/3): ")
+
+            if penerima_pilihan in penerima_dict:
+                penerima = penerima_dict[penerima_pilihan]
+                subject = "Notifikasi Tugas"
+                message = "Halo, ada tugas baru yang harus diselesaikan. Jangan lupa cek VClass ya!"
+                send_email(penerima, subject, message)
+            else:
+                print("❌ Pilihan tidak valid.")
+
+
+            penerima_pilihan = input("Masukkan pilihan (1/2/3): ")
+            if penerima_pilihan in penerima_dict:
+                penerima = penerima_dict[penerima_pilihan]
+                subject = "Notifikasi Tugas"
+                message = "Halo, ada tugas baru yang harus diselesaikan. Jangan lupa cek VClass ya!"
+                send_email(penerima, subject, message)
+            else:
+                print("❌ Pilihan tidak valid.")
+
+
+        elif pilihan == '6':
             print("Selamat tinggal! Sampai jumpa.")
             break
-        else:
-            print("Pilihan tidak valid. Silakan coba lagi.")
+
 
 def welcome_message():
     print("\n✨ Selamat Datang di Sistem Informasi Akademik Gunadarma ✨")
