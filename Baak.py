@@ -155,27 +155,57 @@ def mark_current_date(events, current_date):
                 print(f"Error while marking current date: {e}")
     return events
 
-# Fungsi untuk menampilkan kalender akademik
-def display_academic_calendar(events):
-    if events:
-        today = datetime.today().date()
-        events = mark_current_date(events, today)
+def display_academic_calendar():
+    academic_calendar_table = PrettyTable()
+    academic_calendar_table.field_names = ["Kegiatan", "Tanggal"]
 
-        academic_calendar_table = PrettyTable()
-        academic_calendar_table.field_names = ["Event", "Date"]
-        academic_calendar_table.align["Event"] = "l"  # Rata kiri untuk kolom Event
-        academic_calendar_table.align["Date"] = "r"  # Rata kanan untuk kolom Date
-        academic_calendar_table.max_width["Event"] = 40  # Menyesuaikan lebar kolom Event
-        academic_calendar_table.max_width["Date"] = 20   # Menyesuaikan lebar kolom Date
+    data = [
+        ["Perkuliahan sebelum UTS", ""],
+        ["a. Sebelum Hari Raya Idul Fitri", "6 Maret - 26 Maret 2025"],
+        ["b. Setelah Hari Raya Idul Fitri", "8 April - 26 Mei 2025"],
+        ["Pendistribusian FRS ke mahasiswa melalui situs www.baak.gunadarma.ac.id", "3 Maret - 12 April 2025"],
+        ["Kegiatan Pengisian dan Cetak KRS Online (termasuk Batal/Tambah/Ubah)", "6 Maret - 19 April 2025"],
+        ["Libur Hari Raya Idul Fitri", "27 Maret - 7 April 2025"],
+        ["Batas Akhir Cetak KRS Online", "16 Mei 2025"],
+        ["Batas akhir pengurusan cuti akademik", "6 Juni 2025"],
+        ["Ujian Tengah Semester (UTS)", "27 Mei - 14 Juni 2025"],
+        ["Daftar Ulang Online", "27 Mei - 14 Juni 2025"],
+        ["Kursus/Pelatihan Berbasis Kompetensi untuk Kelas 4 Yang Tidak Ada UTS", "27 Mei - 6 Juni 2025"],
+        ["Kursus/Pelatihan dan Uji Berbasis Kompetensi untuk Kelas 4 Jenjang S1 dan Kelas 3 Jenjang D3", "2 Juni - 14 Juni 2025"],
+    ]
 
-        for event in events:
-            academic_calendar_table.add_row([event["event"], event["date"]])
+    for row in data:
+        academic_calendar_table.add_row(row)
 
-        print("\n✨ Kalender Akademik:")
-        print(academic_calendar_table)
+    academic_calendar_table.align["Kegiatan"] = "l"
+    academic_calendar_table.align["Tanggal"] = "c"
+    academic_calendar_table.border = True
+    academic_calendar_table.header = True
+    academic_calendar_table.hrules = 1  
 
-        # Menampilkan ukuran tabel (jumlah baris)
-        print(f"\nJumlah event dalam kalender akademik: {len(events)}")
+    print("\n✨ Jadwal Kalender Akademik:")
+    print(academic_calendar_table)
+
+
+        
+def cari_mahasiswa():
+    keyword = input("Masukkan NPM atau Nama Mahasiswa: ").strip().lower()
+    result_table = PrettyTable()
+    result_table.field_names = ["No", "NPM", "Nama", "Kelas Lama", "Kelas Baru"]
+    result_table.align["Nama"] = "l"
+
+    found = False
+    for mahasiswa in mahasiswa_pindah:
+        if keyword in mahasiswa[1] or keyword in mahasiswa[2].lower():
+            result_table.add_row([mahasiswa[0], mahasiswa[1], mahasiswa[2], mahasiswa[3], mahasiswa[4]])
+            found = True
+    
+    if found:
+        print("\n✨ Hasil Pencarian Mahasiswa:")
+        print(result_table)
+    else:
+        print("❌ Mahasiswa tidak ditemukan.")
+
 
 # Menu utama
 def main_menu():
@@ -184,22 +214,35 @@ def main_menu():
         print("1. Tampilkan Jadwal Kalender Akademik")
         print("2. Tampilkan Daftar Mahasiswa yang Pindah Kelas")
         print("3. Tampilkan Daftar Jadwal Kuliah")
-        print("4. Keluar")
-        pilihan = input("Masukkan pilihan (1/2/3/4): ")
+        print("4. Cari Mahasiswa")
+        print("5. Keluar")
+        pilihan = input("Masukkan pilihan (1/2/3/4/5): ")
 
         if pilihan == '1':
             calendar_data = get_akademik_calendar()
-            display_academic_calendar(calendar_data)
+            display_academic_calendar()
         elif pilihan == '2':
             display_student_data()
         elif pilihan == '3':
             display_course_schedule()
         elif pilihan == '4':
+            cari_mahasiswa()
+        elif pilihan == '5':
             print("Selamat tinggal! Sampai jumpa.")
             break
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
 
-# Menjalankan menu utama
+def welcome_message():
+    print("\n✨ Selamat Datang di Sistem Informasi Akademik Gunadarma ✨")
+    print("-------------------------------------------------------------------")
+    print("🔹 Program ini membantu lo buat melihat jadwal kuliah,")
+    print("   kalender akademik, serta informasi mahasiswa dari kelas lama.")
+    print("🔹 Gunakan fitur pencarian untuk menemukan mahasiswa dengan mudah.")
+    print("🔹 Data yang ditampilkan selalu diperbarui secara otomatis.")
+    print("-------------------------------------------------------------------\n")
+
+# Menjalankan program
 if __name__ == "__main__":
+    welcome_message()
     main_menu()
